@@ -1,0 +1,19 @@
+{
+  "name": "burst-target-service",
+  "version": "1.0.0",
+  "description": "Mock service that handles burst traffic with capacity limits",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "mock",
+    "microservice"
+  ],
+  "author": "Shahid Razak Nadaf",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
