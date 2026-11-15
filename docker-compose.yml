@@ -1,0 +1,88 @@
+version: "3.9"
+
+networks:
+  gateway-net:
+
+services:
+  steady:
+    build: ./mock-services/steady
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+    networks:
+      - gateway-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  slow:
+    build: ./mock-services/slow
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+    networks:
+      - gateway-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  burst-target:
+    build: ./mock-services/burst-target
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+    networks:
+      - gateway-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      STEADY_URL: http://steady:3001
+      SLOW_URL: http://slow:3002
+      BURST_URL: http://burst-target:3003
+    networks:
+      - gateway-net
+    depends_on:
+      steady:
+        condition: service_healthy
+      slow:
+        condition: service_healthy
+      burst-target:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        VITE_GATEWAY_URL: http://localhost:3000
+    ports:
+      - "5173:80"
+    networks:
+      - gateway-net
+    depends_on:
+      gateway:
+        condition: service_healthy
