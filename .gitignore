@@ -2,3 +2,5 @@ node_modules/
 dist/
 .env
 .DS_Store
+load-tests/results/*
+load-tests/make_graphs.py
