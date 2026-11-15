@@ -1,0 +1,23 @@
+{
+  "name": "adaptive-gateway",
+  "version": "1.0.0",
+  "description": "Adaptive API Gateway with Dynamic Rate Limiting",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "api-gateway",
+    "rate-limiting",
+    "microservices"
+  ],
+  "author": "Shahid Razak Nadaf",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
+    "cors": "^2.8.5"
+  }
+}
