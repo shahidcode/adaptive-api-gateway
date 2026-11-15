@@ -1,7 +1,20 @@
-# Adaptive API Gateway with Dynamic Rate Limiting
+## Author
 
-> M.Tech Dissertation Project — Shahid Razak Nadaf (2024TM93664)  
-> BITS Pilani WILP | Software Engineering
+**Shahid Razak Nadaf** | 2024TM93664 | M.Tech Software Engineering | BITS Pilani WILP
+
+---
+
+## Dissertation Context
+
+**Title:** Design and Implementation of an Adaptive API Gateway with Dynamic Rate Limiting for Microservice Architectures
+
+**Research Question:** Can an API gateway that dynamically adjusts rate limits based on live backend health signals outperform a static rate limiter in throughput, latency, error rate, and fairness?
+
+**Evaluation Matrix:** 3 algorithms × 3 scenarios × ≥5 runs each, with paired t-test / Mann-Whitney U statistical testing.
+
+---
+
+# Adaptive API Gateway with Dynamic Rate Limiting
 
 An intelligent API Gateway that dynamically adjusts rate limits based on real-time backend health metrics. Fully containerised with Docker, deployable on Kubernetes, and automated through a Jenkins CI/CD pipeline.
 
@@ -89,23 +102,17 @@ Project/
 
 ## Prerequisites
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| Node.js 20.x | Run services locally | [nodejs.org](https://nodejs.org) |
-| Docker Desktop | Build and run containers | [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop) |
-| k6 | Load testing | `brew install k6` |
-| Minikube | Local Kubernetes cluster | `brew install minikube` |
-| kubectl | Kubernetes CLI | `brew install kubectl` |
-
-> **Docker Desktop** includes both the Docker engine and `docker compose` — no extra installs needed. It is free for personal and educational use.
-
-> **Enterprise note:** For production deployment in a commercial organisation, [Podman](https://podman.io) is the recommended free alternative. It is fully Docker-compatible — all Dockerfiles and `docker-compose.yml` in this project work with Podman without any changes.
+| Tool           | Purpose                  |
+| -------------- | ------------------------ |
+| Node.js 20.x   | Run services locally     |
+| Docker Desktop | Build and run containers |
+| k6             | Load testing             |
+| Minikube       | Local Kubernetes cluster |
+| kubectl        | Kubernetes CLI           |
 
 ---
 
 ## Option A — Run Locally (no containers)
-
-Fastest for development and the algorithm demo.
 
 ```bash
 # 1. Install all dependencies
@@ -150,14 +157,12 @@ docker compose logs -f
 docker compose down
 ```
 
-Dashboard: `http://localhost:5173`  
+Dashboard: `http://localhost:5173`
 Gateway API: `http://localhost:3000`
 
 ---
 
 ## Option C — Deploy to Kubernetes (Minikube)
-
-Demonstrates scalability and resilience — recommended for the final viva demo.
 
 ```bash
 # 1. Make sure Docker Desktop is running
@@ -189,7 +194,7 @@ minikube service dashboard-svc -n adaptive-gateway
 minikube addons enable metrics-server
 kubectl get hpa -n adaptive-gateway
 
-# Teardown — clean slate for next demo run
+# Teardown — clean slate
 kubectl delete namespace adaptive-gateway
 ```
 
@@ -211,22 +216,22 @@ docker run -d -p 8080:8080 --name jenkins \
 
 **Pipeline stages:**
 
-| Stage | What happens |
-|-------|-------------|
-| Checkout | `git clone` |
-| Install | `npm ci` for gateway + dashboard (runs in parallel) |
-| Build Images | `docker build` for all 5 services |
-| Push Images | `docker push` to registry (set `SKIP_PUSH=true` to skip for local demos) |
+| Stage         | What happens                                              |
+| ------------- | --------------------------------------------------------- |
+| Checkout      | `git clone`                                             |
+| Install       | `npm ci` for gateway + dashboard (runs in parallel)     |
+| Build Images  | `docker build` for all 5 services                       |
+| Push Images   | `docker push` to registry                               |
 | Deploy to K8s | `kubectl apply -f k8s/` + waits for rollout to complete |
 
 **Parameters available in the Jenkins UI:**
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `REGISTRY` | `localhost:5000` | Container registry prefix |
-| `IMAGE_TAG` | Build number | Tag applied to all images |
-| `SKIP_PUSH` | `true` | Skip the push step (useful for local demos) |
-| `DEPLOY_ENV` | `dev` | Target environment label |
+| Parameter      | Default            | Description                                |
+| -------------- | ------------------ | ------------------------------------------ |
+| `REGISTRY`   | `localhost:5000` | Container registry prefix                  |
+| `IMAGE_TAG`  | Build number       | Tag applied to all images                  |
+| `SKIP_PUSH`  | `true`           | Skip the push step (useful for local test) |
+| `DEPLOY_ENV` | `dev`            | Target environment label                   |
 
 ---
 
@@ -234,23 +239,23 @@ docker run -d -p 8080:8080 --name jenkins \
 
 ### Gateway (port 3000)
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /health` | Gateway health + uptime |
-| `GET /metrics` | All route metrics + rate limit status |
-| `GET /metrics/system` | CPU, memory, disk usage + thresholds |
-| `GET /metrics/logs` | Last 200 structured log entries |
-| `GET /api/users` | Proxy → steady service |
-| `GET /api/orders` | Proxy → slow service |
-| `GET /api/products` | Proxy → burst-target service |
+| Endpoint                | Description                           |
+| ----------------------- | ------------------------------------- |
+| `GET /health`         | Gateway health + uptime               |
+| `GET /metrics`        | All route metrics + rate limit status |
+| `GET /metrics/system` | CPU, memory, disk usage + thresholds  |
+| `GET /metrics/logs`   | Last 200 structured log entries       |
+| `GET /api/users`      | Proxy → steady service               |
+| `GET /api/orders`     | Proxy → slow service                 |
+| `GET /api/products`   | Proxy → burst-target service         |
 
 ### Backend Services
 
-| Service | Port | Latency | Error Rate |
-|---------|------|---------|------------|
-| Steady | 3001 | 50–100ms | < 1% |
-| Slow | 3002 | 500–2000ms | ~10% |
-| Burst-target | 3003 | 50–500ms* | ~3% + overload |
+| Service      | Port | Latency     | Error Rate     |
+| ------------ | ---- | ----------- | -------------- |
+| Steady       | 3001 | 50–100ms   | < 1%           |
+| Slow         | 3002 | 500–2000ms | ~10%           |
+| Burst-target | 3003 | 50–500ms*  | ~3% + overload |
 
 *Latency increases with concurrent load
 
@@ -258,17 +263,17 @@ docker run -d -p 8080:8080 --name jenkins \
 
 ## Dashboard Panels
 
-| Panel | Description |
-|-------|-------------|
-| Stats bar | Total requests, errors, error rate, active routes |
-| Rate Limits | Current req/s per route, algorithm, recent adaptive adjustments |
-| Service Health | p50/p95/p99 latency + error rate per route, colour-coded by status |
-| Latency Percentiles | Grouped bar chart comparing p50/p95/p99 across routes |
-| Throughput chart | Area + line chart with mouse-over tooltip + zoom brush |
-| p95 Latency chart | Time-series of p95 latency per route |
-| Error Rate chart | Time-series of error % per route |
-| System Resources | CPU / Memory / Disk donut charts with threshold alerts |
-| System Logs | Live scrollable feed of INFO / WARN / ERROR events |
+| Panel               | Description                                                        |
+| ------------------- | ------------------------------------------------------------------ |
+| Stats bar           | Total requests, errors, error rate, active routes                  |
+| Rate Limits         | Current req/s per route, algorithm, recent adaptive adjustments    |
+| Service Health      | p50/p95/p99 latency + error rate per route, colour-coded by status |
+| Latency Percentiles | Grouped bar chart comparing p50/p95/p99 across routes              |
+| Throughput chart    | Area + line chart with mouse-over tooltip + zoom brush             |
+| p95 Latency chart   | Time-series of p95 latency per route                               |
+| Error Rate chart    | Time-series of error % per route                                   |
+| System Resources    | CPU / Memory / Disk donut charts with threshold alerts             |
+| System Logs         | Live scrollable feed of INFO / WARN / ERROR events                 |
 
 ---
 
@@ -305,12 +310,12 @@ Restart the gateway. No other changes needed.
 
 ## Environment Variables
 
-| Variable | Default (local) | Docker Compose / K8s value |
-|----------|----------------|---------------------------|
-| `PORT` | `3000` | `3000` |
-| `STEADY_URL` | `http://localhost:3001` | `http://steady:3001` |
-| `SLOW_URL` | `http://localhost:3002` | `http://slow:3002` |
-| `BURST_URL` | `http://localhost:3003` | `http://burst-target:3003` |
+| Variable             | Default (local)           | Docker Compose / K8s value                  |
+| -------------------- | ------------------------- | ------------------------------------------- |
+| `PORT`             | `3000`                  | `3000`                                    |
+| `STEADY_URL`       | `http://localhost:3001` | `http://steady:3001`                      |
+| `SLOW_URL`         | `http://localhost:3002` | `http://slow:3002`                        |
+| `BURST_URL`        | `http://localhost:3003` | `http://burst-target:3003`                |
 | `VITE_GATEWAY_URL` | `http://localhost:3000` | set at image build time via `--build-arg` |
 
 ---
@@ -357,10 +362,11 @@ Restart the gateway. No other changes needed.
 
 ## Troubleshooting
 
-**Docker daemon not running**  
+**Docker daemon not running**
 Open Docker Desktop and wait for the whale icon to appear in the menu bar before running any `docker` commands.
 
 **Gateway won't start**
+
 ```bash
 lsof -i :3000       # find what's using port 3000
 kill -9 <PID>
@@ -368,38 +374,24 @@ cd gateway && rm -rf node_modules && npm install
 ```
 
 **Dashboard shows "Disconnected"**
+
 1. Verify gateway is running: `curl http://localhost:3000/health`
 2. Check the browser console for CORS errors
 3. If running via Docker Compose, confirm `VITE_GATEWAY_URL=http://localhost:3000` in `.env`
 
 **Kubernetes pods stuck in Pending**
+
 ```bash
 kubectl describe pod -n adaptive-gateway   # check the Events section at the bottom
 minikube addons enable metrics-server      # required for HPA to work
 ```
 
-**Minikube images not found (ErrImageNeverPull)**  
+**Minikube images not found (ErrImageNeverPull)**
 You need to build images inside the Minikube daemon. Re-run `eval $(minikube docker-env)` in your current terminal, then rebuild.
 
 **k6 tests fail**
+
 ```bash
 k6 version                          # confirm k6 is installed
 curl http://localhost:3000/health   # confirm gateway is running
 ```
-
----
-
-## Dissertation Context
-
-**Title:** Design and Implementation of an Adaptive API Gateway with Dynamic Rate Limiting for Microservice Architectures
-
-**Research Question:** Can an API gateway that dynamically adjusts rate limits based on live backend health signals outperform a static rate limiter in throughput, latency, error rate, and fairness?
-
-**Evaluation Matrix:** 3 algorithms × 3 scenarios × ≥5 runs each, with paired t-test / Mann-Whitney U statistical testing.
-
----
-
-## Author
-
-**Shahid Razak Nadaf** | 2024TM93664 | M.Tech Software Engineering | BITS Pilani WILP  
-Supervisor: Danish Malik Nadaf | Organisation: TCS, Pune
