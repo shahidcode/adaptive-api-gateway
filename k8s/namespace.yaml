@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: adaptive-gateway
+  labels:
+    project: adaptive-api-gateway
+    author: 2024tm93664

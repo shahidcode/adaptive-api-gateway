@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-svc
+  namespace: adaptive-gateway
+  labels:
+    app: dashboard
+spec:
+  selector:
+    app: dashboard
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30002   # access via: minikube service dashboard-svc -n adaptive-gateway

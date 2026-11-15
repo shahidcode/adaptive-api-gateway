@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  namespace: adaptive-gateway
+data:
+  # Service DNS names within the cluster (Kubernetes resolves these)
+  STEADY_URL: "http://steady-svc:3001"
+  SLOW_URL:   "http://slow-svc:3002"
+  BURST_URL:  "http://burst-target-svc:3003"
+  PORT:       "3000"

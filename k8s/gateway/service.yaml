@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-svc
+  namespace: adaptive-gateway
+  labels:
+    app: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  type: NodePort   # NodePort lets Minikube expose the port on the host
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000   # access via: minikube ip + :30000

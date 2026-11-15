@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: steady-service
+  namespace: adaptive-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: steady-service
+  template:
+    metadata:
+      labels:
+        app: steady-service
+    spec:
+      containers:
+        - name: steady-service
+          image: steady-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3001
+          env:
+            - name: PORT
+              value: "3001"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: steady-svc
+  namespace: adaptive-gateway
+spec:
+  selector:
+    app: steady-service
+  ports:
+    - port: 3001
+      targetPort: 3001
