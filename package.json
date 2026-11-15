@@ -1,0 +1,29 @@
+{
+  "name": "adaptive-api-gateway-project",
+  "version": "1.0.0",
+  "description": "Adaptive API Gateway with Dynamic Rate Limiting - M.Tech Dissertation Project",
+  "author": "Shahid Razak Nadaf (2024TM93664)",
+  "license": "MIT",
+  "scripts": {
+    "install:all": "npm run install:gateway && npm run install:services && npm run install:dashboard",
+    "install:gateway": "cd gateway && npm install",
+    "install:services": "cd mock-services/steady && npm install && cd ../slow && npm install && cd ../burst-target && npm install",
+    "install:dashboard": "cd dashboard && npm install",
+    "gateway": "cd gateway && npm start",
+    "service:steady": "cd mock-services/steady && npm start",
+    "service:slow": "cd mock-services/slow && npm start",
+    "service:burst": "cd mock-services/burst-target && npm start",
+    "dashboard": "cd dashboard && npm run dev",
+    "test:steady": "cd load-tests && k6 run steady-load.js",
+    "test:burst": "cd load-tests && k6 run burst-load.js",
+    "test:slow": "cd load-tests && k6 run slow-backend.js",
+    "test:all": "npm run test:steady && npm run test:burst && npm run test:slow"
+  },
+  "keywords": [
+    "api-gateway",
+    "rate-limiting",
+    "adaptive",
+    "microservices",
+    "dissertation"
+  ]
+}
