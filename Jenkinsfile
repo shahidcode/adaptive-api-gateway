@@ -46,12 +46,26 @@ pipeline {
         }
     }
 
-    post {
+        post {
         success {
             echo "Deployment successful. Dashboard: minikube service dashboard-svc -n ${NAMESPACE}"
+            githubNotify context: 'jenkins/pipeline',
+                         status: 'SUCCESS',
+                         description: 'Build and deploy passed',
+                         credentialsId: 'github-token',
+                         account: 'shahidcode',
+                         repo: 'adaptive-api-gateway',
+                         sha: env.GIT_COMMIT
         }
         failure {
             echo "Pipeline failed. Check the logs above."
+            githubNotify context: 'jenkins/pipeline',
+                         status: 'FAILURE',
+                         description: 'Build or deploy failed',
+                         credentialsId: 'github-token',
+                         account: 'shahidcode',
+                         repo: 'adaptive-api-gateway',
+                         sha: env.GIT_COMMIT
         }
     }
 }
